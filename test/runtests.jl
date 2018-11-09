@@ -165,10 +165,13 @@ k = 10_000
 @time f = L*exp.(L.points) # project exp(x), 0.3s
 @time u = B * (A \ (B'f)) # solution, 4s
 
+using Pkg
+if all([p ∈ keys(Pkg.installed())
+        for p in ["Plots", "ApproxFun"]])
+    # Compare with "exact" solution
+    using Plots, ApproxFun
 
-# Compare with "exact" solution
-using Plots, ApproxFun
-
-x = Fun(axes(L,1))
-u_ex = [Dirichlet(Chebyshev(0..1)); ApproxFun.Derivative()^2 + k^2*I] \ [[0,0], exp(x)]
-@test u[0.1] ≈ u_ex(0.1) rtol = 1E-3
+    x = Fun(axes(L,1))
+    u_ex = [Dirichlet(Chebyshev(0..1)); ApproxFun.Derivative()^2 + k^2*I] \ [[0,0], exp(x)]
+    @test u[0.1] ≈ u_ex(0.1) rtol = 1E-3
+end
