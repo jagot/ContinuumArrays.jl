@@ -36,6 +36,9 @@ end
     @test axes(f) == (1.0..3.0,)
     @test f[1.1] ≈ 1
     @test f[2.1] ≈ 2
+    # Ensure right-side continuity
+    @test f[1.0] ≈ 0
+    @test f[2.0] ≈ 1
 
     @test H'H == Eye(2)
 end
@@ -155,6 +158,7 @@ end
 
 L = LinearSpline(range(0,stop=1,length=20_000_000))
 B = L[:,2:end-1] # Zero dirichlet by dropping first and last spline
+D = Derivative(axes(L,1))
 
 k = 10_000
 @time A = -(B'D'D*B) + k^2*B'B # Weak Helmholtz, 9s
